@@ -3,11 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <script src='src/scores.js'></script>
+    <script src='src/snake.js'></script>
     <script src='src/person.js'></script>
     <script src='src/game.js'></script>
 
+    <style>
+        #gameContainer{
+            border: 1px solid black;
+            width: 300px;
+            height: 300px;
+            position: relative;
+        }
+        .food{
+            background-color: black;
+            position: absolute;
+        }
+        .snake{
+            background-color: darkmagenta;
+            position: absolute;
+        }
+    </style>
 </head>
 <body>
-    Hello word !
+    <h1>Hra had</h1>
+    
+    <div>
+        <a href="javascript:;" onclick="game.startGame()" >Start game</a>
+
+        <div id="gameContainer">
+        </div>
+    </div>
 </body>
 </html>
