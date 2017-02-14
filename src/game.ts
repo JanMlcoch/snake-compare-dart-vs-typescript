@@ -9,6 +9,8 @@ enum Direction {Left, Right, Top, Down}
 class Game{
     table: Table;
     isStarted: boolean = false;
+    isAllowedWall: boolean = false;
+    isAllowedSnake: boolean = false;
     difficulty: Levels = Levels.Amateur;
     scores: Scores = new Scores();
     isPaused: boolean = false;
@@ -16,27 +18,51 @@ class Game{
     snake: Snake;
     timer: number;
 
+    constructor(){
+        this.table = new Table(this);
+        this.snake = new Snake(this);
+        this.actualScore = new Score('Unknown', 0);
+    }
+
     startGame() {
-        this.table = new Table();
-        this.snake = new Snake();
-        this.actualScore = new Score(0);
+        if(this.isStarted){
+            return;
+        }
+        this.actualScore.nick = (<HTMLInputElement> document.getElementById('nick')).value;
+        document.getElementById('score').innerHTML = this.actualScore.score.toString();
+        this.snake.direction = Direction.Right;
+        this.setDifficulty();
+        this.isPaused = false;
+        this.isStarted = true;
         this.initTimer();
-        document.onkeydown =  (event: KeyboardEvent) => {
+        document.onkeydown = (event: KeyboardEvent) => {
             switch (event.keyCode){
                 //Left
                 case 37:
+                    if(this.snake.direction == Direction.Right) {
+                        return;
+                    }
                     this.snake.direction = Direction.Left;
                     break;
                 // Right
                 case 39:
+                    if(this.snake.direction == Direction.Left) {
+                        return;
+                    }
                     this.snake.direction = Direction.Right;
                     break;
                 // Top
                 case 38:
+                    if(this.snake.direction == Direction.Down) {
+                        return;
+                    }
                     this.snake.direction = Direction.Top;
                     break;
                 // Down
                 case 40:
+                    if(this.snake.direction == Direction.Top) {
+                        return;
+                    }
                     this.snake.direction = Direction.Down;
                     break;
             }
@@ -53,103 +79,63 @@ class Game{
         this.timer = setTimeout(() => this.tick(), this.difficulty);
     }
 
-    tick(){
-        if(!this.isPaused){
+    tick() {
+        if (!this.isPaused && this.isStarted) {
             this.snake.move();
         }
         this.initTimer();
     }
+
+    updateScore(food: FoodPoint){
+        this.actualScore.score += food.value;
+        document.getElementById('score').innerHTML = this.actualScore.score.toString();
+    }
+
+    endGame(){
+        this.isStarted = false;
+        let scoresElement = document.getElementById('scores');
+        this.scores.addNewScore(this.actualScore);
+        scoresElement.innerHTML = '';
+        for(let score of this.scores.sortedScores){
+            let contEl: HTMLDivElement = document.createElement('div');
+            let nameEl: HTMLSpanElement = document.createElement('span');
+            let scoreEl: HTMLSpanElement = document.createElement('span');
+            nameEl.classList.add('name');
+            nameEl.innerHTML = score.nick;
+            scoreEl.classList.add('score');
+            scoreEl.innerHTML = score.score.toString();
+            contEl.appendChild(nameEl);
+            contEl.appendChild(scoreEl);
+            scoresElement.appendChild(contEl);
+        }
+        this.table.resetTable();
+        this.snake.resetSnake();
+        this.actualScore = new Score((<HTMLInputElement> document.getElementById('nick')).value, 0);
+    }
+
+
+    setDifficulty(){
+        let difficultyRadios = document.getElementsByName("difficulty");
+        let difficulty: string;
+        for(let i = 0; i < difficultyRadios.length; i++){
+            let difficultyRadio = difficultyRadios[i];
+            if((<HTMLInputElement> difficultyRadio).checked){
+                difficulty = difficultyRadio.id;
+            }
+        }
+        switch (difficulty){
+            case 'difficulty-easy':
+                this.difficulty = Levels.Amateur;
+                break;
+            case 'difficulty-normal':
+                this.difficulty = Levels.Normal;
+                break;
+            case 'difficulty-hard':
+                this.difficulty = Levels.Profi;
+                break;
+
+        }
+    }
 }
 
 let game = new Game();
-
-class Table{
-    static size: [number, number] = [30,30];
-    static pointSize: [number, number] = [10,10];
-    foods: Point[] = [];
-    htmlContainer: HTMLElement;
-
-    constructor(){
-        this.setHtmlContainer();
-        this.addRandomFood();
-    }
-
-    addRandomFood(){
-        let x = Math.floor(Math.random() * Table.size[0]);
-        let y = Math.floor(Math.random() * Table.size[1]);
-        this.addFood(x, y);
-    }
-
-    setHtmlContainer(){
-        this.htmlContainer = document.getElementById("gameContainer");
-        let x: number = Table.size[0] * Table.pointSize[0];
-        let y: number = Table.size[1] * Table.pointSize[1];
-        this.htmlContainer.style.width = x+"px";
-        this.htmlContainer.style.height = y+"px";
-    }
-
-    addFood(x: number, y: number){
-        let food = new Point([x,y], 1, true);
-        this.foods.push(food);
-        food.htmlElement.classList.add("food");
-        this.addPointIntoContainer(food);
-    }
-
-    ateFood(food: Point){
-        game.actualScore.score += food.value;
-        // delete this.foods[this.foods.indexOf(food)];
-        food.isFood = false;
-        food.removeElement();
-        console.log("score: "+game.actualScore.score);
-        this.addRandomFood();
-    }
-
-    addPointIntoContainer(point: Point){
-        this.htmlContainer.appendChild(point.htmlElement);
-    }
-
-    removePointFromContainer(point: Point){
-        point.removeElement();
-    }
-
-    getFoodOnCoo(coo: [number, number]): any{
-        for(let food of this.foods){
-            if(food.coordinates[0] == coo[0] && food.coordinates[1] == coo[1]){
-                return food;
-            }
-        }
-        return null;
-    }
-
-}
-
-class Point{
-    coordinates: [number, number];
-    value: number;
-    isFood: boolean;
-    htmlElement: HTMLElement;
-    static iterator: number = 0;
-
-    constructor(_coordinates: [number, number], _value: number, _isFood: boolean = false){
-        this.coordinates = _coordinates;
-        this.value = _value;
-        this.isFood = _isFood;
-        this.createElement();
-    }
-
-    createElement() {
-        this.htmlElement = document.createElement('div');
-        this.htmlElement.id = (Point.iterator++).toString();
-        this.htmlElement.style.width = Table.pointSize[0]+"px";
-        this.htmlElement.style.height = Table.pointSize[1]+"px";
-        this.htmlElement.style.left = Table.pointSize[0] * this.coordinates[0]+"px";
-        this.htmlElement.style.top = Table.pointSize[1] * this.coordinates[1]+"px";
-
-    }
-
-    removeElement(){
-        this.htmlElement.remove();
-    }
-
-
-}
