@@ -63,9 +63,6 @@ class Table{
     }
 
     getFoodOnCoo(coo: [number, number]): any{
-        if(this.foods.length <= 0){
-            return null;
-        }
         for(let food of this.foods){
             if(food.coordinates[0] == coo[0] && food.coordinates[1] == coo[1]){
                 return food;
