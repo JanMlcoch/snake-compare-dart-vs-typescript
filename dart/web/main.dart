@@ -2,7 +2,16 @@
 // is governed by a BSD-style license that can be found in the LICENSE file.
 
 import 'dart:html';
+import 'package:dart/test_class.dart';
+import 'package:dart/game/library.dart';
+//import '../lib/test_class.dart';
 
 void main() {
-  querySelector('#output').text = 'Your Dart app is running.';
+  Game game = new Game();
+  querySelector('#startGame').onClick.listen((_){
+    game.startGame();
+  });
 }
+
+
+

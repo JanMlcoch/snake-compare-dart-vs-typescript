@@ -5,35 +5,26 @@
 enum Levels {Amateur = 100, Normal = 50, Profi = 30}
 enum Direction {Left, Right, Top, Down}
 
-
 class Game{
-    table: Table;
     isStarted: boolean = false;
+    isPaused: boolean = false;
     isAllowedWall: boolean = false;
     isAllowedSnake: boolean = false;
     difficulty: Levels = Levels.Amateur;
+    table: Table = new Table(this);
+    snake: Snake = new Snake(this);
     scores: Scores = new Scores();
-    isPaused: boolean = false;
     actualScore: Score;
-    snake: Snake;
     timer: number;
 
-    constructor(){
-        this.table = new Table(this);
-        this.snake = new Snake(this);
-        this.actualScore = new Score('Unknown', 0);
-    }
-
     startGame() {
-        if(this.isStarted){
-            return;
-        }
-        this.actualScore.nick = (<HTMLInputElement> document.getElementById('nick')).value;
+        if(this.isStarted) return;
+        this.actualScore = new Score((<HTMLInputElement> document.getElementById('nick')).value, 0);
         document.getElementById('score').innerHTML = this.actualScore.score.toString();
         this.snake.direction = Direction.Right;
-        this.setDifficulty();
         this.isPaused = false;
         this.isStarted = true;
+        this.setDifficulty();
         this.initTimer();
         document.onkeydown = (event: KeyboardEvent) => {
             switch (event.keyCode){
@@ -110,7 +101,7 @@ class Game{
         }
         this.table.resetTable();
         this.snake.resetSnake();
-        this.actualScore = new Score((<HTMLInputElement> document.getElementById('nick')).value, 0);
+        // this.actualScore = new Score((<HTMLInputElement> document.getElementById('nick')).value, 0);
     }
 
 

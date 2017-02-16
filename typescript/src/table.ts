@@ -13,7 +13,6 @@ class Table{
         this.game = game;
         this.setHtmlContainer();
         this.addRandomFood();
-        console.log("add food on constructor");
     }
 
     addRandomFood(){
@@ -97,7 +96,6 @@ class Point{
 
     constructor(_coordinates: [number, number]){
         this.coordinates = _coordinates;
-
         this.createElement();
     }
 
