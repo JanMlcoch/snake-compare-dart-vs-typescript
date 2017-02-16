@@ -28,7 +28,6 @@ class Snake{
     }
 
     move(){
-        console.log(this.game.table.foods);
         if(this.resolveWallCollision()){
             if(this.game.isAllowedWall){
                 this.goThroughWall();
