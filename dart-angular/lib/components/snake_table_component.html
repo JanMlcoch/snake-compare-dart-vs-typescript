@@ -1,0 +1,10 @@
+<div id="gameContainer" [style.width]="table.width.toString()+'px'" [style.height]="table.height.toString()+'px'">
+    <div *ngFor="let food of table.foods" id="{{food.id}}" class="food" style="width: 10px; height: 10px;"
+         [style.left]="(table.pointSize[0] * food.coordinates[0]).toString()+'px'"
+         [style.top]="(table.pointSize[1] * food.coordinates[1]).toString()+'px'">
+    </div>
+    <div *ngFor="let snake of snake.snakeBody" id="{{snake.id}}" class="snake" style="width: 10px; height: 10px;"
+         [style.left]="(table.pointSize[0] * snake.coordinates[0]).toString()+'px'"
+         [style.top]="(table.pointSize[1] * snake.coordinates[1]).toString()+'px'">
+    </div>
+</div>
