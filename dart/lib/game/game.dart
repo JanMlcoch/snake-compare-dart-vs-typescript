@@ -2,7 +2,8 @@ part of game;
 
 enum Levels {Amateur, Normal, Profi}
 enum Direction {Left, Right, Top, Down}
-const List<int> LevelsValues = const [100, 50, 30];
+const Map<Levels, int> LevelsValues = const {Levels.Amateur: 100, Levels.Normal: 50, Levels.Profi: 30};
+
 
 class Game{
   bool isStarted = false;
@@ -15,16 +16,24 @@ class Game{
   Scores scores;
   Score actualScore;
   Timer timer;
+  String boo = "boo";
+  String foo = "foooo";
+  String get loo => "loo";
 
   Game(){
     table = new Table(this);
     snake = new Snake(this);
     scores = new Scores();
+
+    String mix = "my${boo}${foo.substring(0,3)}$loo"; // myboofooloo
+
+    print(mix);
   }
 
   void startGame(){
     if(isStarted) return;
     actualScore = new Score((querySelector('#nick') as InputElement).value, 0);
+    actualScore.score = 10;
     snake.direction = Direction.Right;
     isStarted = true;
     isPaused = false;
@@ -66,7 +75,7 @@ class Game{
     if(timer?.isActive == true){
       timer.cancel();
     }
-    timer = new Timer.periodic(new Duration(milliseconds: LevelsValues[difficulty.index]), (Timer timer){
+    timer = new Timer.periodic(new Duration(milliseconds: LevelsValues[Levels.values[difficulty.index]]), (Timer timer){
       tick();
     });
   }

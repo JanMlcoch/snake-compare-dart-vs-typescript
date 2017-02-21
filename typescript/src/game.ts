@@ -5,6 +5,15 @@
 enum Levels {Amateur = 100, Normal = 50, Profi = 30}
 enum Direction {Left, Right, Top, Down}
 
+
+class Greeter {
+    constructor(public message: string){
+
+    }
+}
+
+
+
 class Game{
     isStarted: boolean = false;
     isPaused: boolean = false;
@@ -18,6 +27,29 @@ class Game{
     timer: number;
 
     startGame() {
+
+        let pets = new Set(["Cat", "Dog", "Hamster"]);
+        // let petsMap = {"Luk":"Cat", "Pete":"Dog", "Erni":"Hamster"};
+        // let petsMap = new Map({"Luk":"Cat", "Pete":"Dog", "Erni":"Hamster"});
+        // let pets: Set<string> = new Set(["Cat", "Dog", "Hamster"]);
+        // pets["species"] = "mammals";
+
+        for (let pet in pets) {
+            console.log(pet); // "species"
+        }
+
+        for (let pet of pets) {
+            console.log(pet); // "Cat", "Dog", "Hamster"
+        }
+
+        // let g = new Greeter("sss");
+        // console.log(g.message);
+        //
+        // let boo: number = 5;
+        // let fooboo: string = "foo"+boo+5;  // foo55
+        // console.log(fooboo);
+
+
         if(this.isStarted) return;
         this.actualScore = new Score((<HTMLInputElement> document.getElementById('nick')).value, 0);
         document.getElementById('score').innerHTML = this.actualScore.score.toString();
